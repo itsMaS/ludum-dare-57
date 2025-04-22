@@ -7,12 +7,8 @@ namespace MarKit
 {
     public class GameEntityBehavior : MarKitBehavior, IBulletTarget
     {
-        public UnityEvent OnTakeDamage;
-        public UnityEvent OnDestroyed;
-        public UnityEvent<float> OnUpdateHealth;
-
-        public UnityEvent OnDeath;
-
+        public MarKitEvent OnReceivedDamage;
+        public MarKitEvent OnDied;
 
         public bool isDead { get; private set; } = false;
         public bool isAlive => !isDead;
@@ -29,11 +25,9 @@ namespace MarKit
 
         public virtual void Hit(BulletBehavior bullet)
         {
-            OnTakeDamage.Invoke();
+            OnReceivedDamage.Invoke(this);
 
             currentHealth--;
-
-            OnUpdateHealth.Invoke(normalizedHealth);
 
             if(currentHealth <= 0)
             {
@@ -54,12 +48,12 @@ namespace MarKit
 
             Destroy(gameObject, 2);
 
-            OnDeath.Invoke();
+            OnDied.Invoke(this);
         }
 
-        private void OnDestroy()
+        internal void RestoreHealth()
         {
-            OnDestroyed.Invoke();
+            currentHealth = maxHealth;
         }
     }
 }

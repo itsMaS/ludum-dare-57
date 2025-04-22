@@ -31,8 +31,6 @@ namespace MarKit
 
         private void UpdateLives()
         {
-            Debug.Log("Update lives");
-
             for (int i = 0; i < player.maxLives; i++)
             {
                 var indicator = LivesIndicators[i];

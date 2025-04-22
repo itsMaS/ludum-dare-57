@@ -13,6 +13,11 @@ using UnityEditor;
 
 namespace MarKit
 {
+    public interface IGeneratable
+    {
+        public void Generate(params object[] argumants);
+    }
+
     public class GameManager : Singleton<GameManager>, IMarkitEventCaller
     {
         public MarKitEvent OnRecordBeaten;
@@ -42,7 +47,7 @@ namespace MarKit
         public List<LevelTemplate> Templates = new List<LevelTemplate>();
         public List<LevelTemplate> UsedTemplates = new List<LevelTemplate>();
 
-        public PlayerController player;
+        public PlayerController player { get; private set; }
         public float playerDepth => player.transform.position.y;
 
         private float nextHeight = 0;
@@ -51,6 +56,21 @@ namespace MarKit
         private bool gameStarted = false;
         bool scoreBeaten = false;
         private bool gameOver = false;
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            player = FindObjectOfType<PlayerController>();
+
+            foreach (var item in FindObjectsOfType<Transform>())
+            {
+                if (item.TryGetComponent<IGeneratable>(out var a))
+                {
+                    a.Generate();
+                }
+            }
+        }
 
         public void StartGame()
         {
@@ -113,23 +133,36 @@ namespace MarKit
 
         private void AddTemplate()
         {
-            var notUsedTemplates = Templates.Where(x => !UsedTemplates.Contains(x));
+            LevelTemplate selected = null;
 
-            if(notUsedTemplates.Count() == 0)
+#if UNITY_EDITOR
+            if(LevelEditorWindow.debugLevel)
             {
-                notUsedTemplates = Templates;
-                UsedTemplates.Clear();
+                selected = LevelEditorWindow.debugLevel;
+                LevelEditorWindow.debugLevel = null;
             }
-
-            var newPick = notUsedTemplates.PickRandom();
-            UsedTemplates.Add(newPick);
-
-            var instance = Instantiate(newPick, xPosition * Vector3.right + Vector3.down * (-nextHeight + newPick.height/2), Quaternion.identity);
-            nextHeight -= newPick.height;
-
-            foreach (var item in instance.GetComponentsInChildren<RockBehavior>())
+            else
             {
-                item.GenerateRock();
+#endif
+                var notUsedTemplates = Templates.Where(x => !UsedTemplates.Contains(x));
+
+                if(notUsedTemplates.Count() == 0)
+                {
+                    notUsedTemplates = Templates;
+                    UsedTemplates.Clear();
+                }
+                selected = notUsedTemplates.PickRandom();
+#if UNITY_EDITOR
+            }
+#endif
+            UsedTemplates.Add(selected);
+
+            var instance = Instantiate(selected, xPosition * Vector3.right + Vector3.down * (-nextHeight + selected.height/2), Quaternion.identity);
+            nextHeight -= selected.height;
+
+            foreach (var item in instance.GetComponentsInChildren<IGeneratable>())
+            {
+                item.Generate();
             }
         }
 

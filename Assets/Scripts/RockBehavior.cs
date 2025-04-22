@@ -11,27 +11,28 @@ using UnityEditor;
 
 namespace MarKit
 {
-    public class RockBehavior : GameEntityBehavior
+    [RequireComponent(typeof(GameEntityBehavior))]
+    public class RockBehavior : MarKitBehavior, IGeneratable
     {
-        public MarKitEvent OnBroken;
-
         public float hpPerUnitOfArea = 2;
         public Vector2 sizeBounds = new Vector2(3, 3);
 
         SpriteShapeController controller;
+        GameEntityBehavior entity;
 
         [SerializeField] float areaSize = 0;
 
-        protected override void Start()
+        private void Awake()
         {
-            controller = GetComponent<SpriteShapeController>();
+            entity = GetComponent<GameEntityBehavior>();
 
-            maxHealth = Mathf.CeilToInt(areaSize * hpPerUnitOfArea);
-
-            base.Start();
+            entity.OnReceivedDamage.AddListener(Hit);
         }
 
-
+        protected void Start()
+        {
+            controller = GetComponent<SpriteShapeController>();
+        }
 
         internal static void GenerateAll()
         {
@@ -51,6 +52,9 @@ namespace MarKit
 
             GetComponent<Collider2D>().enabled = false;
             GenerateSpriteShape(GetGeneratedPoints());
+
+            entity.maxHealth = Mathf.CeilToInt(areaSize * hpPerUnitOfArea);
+            entity.RestoreHealth();
         }
 
         internal void ResetShape()
@@ -125,24 +129,20 @@ namespace MarKit
                 }
                 else
                 {
-                    RockPositions.Add(castDirection * size * Random.value.Remap01(0.9f, 1.1f) - castDirection.normalized * 1f);
+                    RockPositions.Add(castDirection * size - castDirection.normalized * Random.value.Remap01(0.8f, 1.2f));
                 }
             }
 
             return RockPositions;
         }
 
-        public override void Hit(BulletBehavior bullet)
+        public void Hit()
         {
-            base.Hit(bullet);
-
-            controller.spriteShapeRenderer.material.SetFloat("_CrackProgress", 1-normalizedHealth);
+            controller.spriteShapeRenderer.material.SetFloat("_CrackProgress", 1-entity.normalizedHealth);
         }
 
-        protected override void Die()
+        protected void Die()
         {
-            base.Die();
-
             this.DelayedAction(0.25f, () =>
             {
 
@@ -151,8 +151,6 @@ namespace MarKit
                 controller.spriteShapeRenderer.materials[0].SetFloat("_DissolveProgress", t);
                 controller.spriteShapeRenderer.materials[1].SetFloat("_DissolveProgress", t);
             }, true, Utilities.Ease.Linear);
-
-            OnBroken.Invoke(this);
         }
 
         public static float CalculatePolygonArea(List<Vector2> points)
@@ -178,8 +176,13 @@ namespace MarKit
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireSphere(transform.position, sizeBounds.x*transform.localScale.x);
-            Gizmos.DrawWireSphere(transform.position, sizeBounds.y*transform.localScale.x);
+            Gizmos.DrawWireSphere(transform.position, sizeBounds.x);
+            Gizmos.DrawWireSphere(transform.position, sizeBounds.y);
+        }
+
+        public void Generate(params object[] argumants)
+        {
+            GenerateRock();
         }
     }
 
@@ -207,6 +210,10 @@ namespace MarKit
             {
                 script.ResetShape();
             }
+        }
+
+        private void OnSceneGUI()
+        {
         }
     }
 #endif

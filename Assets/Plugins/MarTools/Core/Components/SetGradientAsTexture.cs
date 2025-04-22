@@ -2,12 +2,15 @@ using MarTools;
 using UnityEngine;
 
 [RequireComponent(typeof(Material))]
+[ExecuteAlways]
 public class SetGradientAsTexture : MonoBehaviour
 {
     public string parameterID = "_Gradient";
     public int materialIndex = 0;
     public Gradient gradient;
     public int resolution = 32;
+
+    public bool sharedMaterialDuringRuntime = true;
 
     private void Start()
     {
@@ -18,11 +21,18 @@ public class SetGradientAsTexture : MonoBehaviour
     {
         UpdateMaterial();
     }
+    private void Update()
+    {
+        if(!Application.isPlaying)
+        {
+            UpdateMaterial();
+        }
+    }
 
     private void UpdateMaterial()
     {
         var renderer = GetComponent<Renderer>();
-        if(Application.isPlaying)
+        if(Application.isPlaying && !sharedMaterialDuringRuntime)
         {
             renderer.materials[materialIndex].SetTexture(parameterID, Utilities.GenerateGradientTexture(gradient, resolution, 1));
         }

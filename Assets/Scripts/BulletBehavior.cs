@@ -37,11 +37,10 @@ namespace MarKit
 
             instance.OnLaunched.Invoke();
 
-            Destroy(instance.gameObject, lifetime);
 
-            this.DelayedAction(lifetime, () => 
+            instance.DelayedAction(lifetime, () => 
             {
-                Despawn();
+                instance.Despawn();
             });
 
             return instance;
@@ -86,6 +85,8 @@ namespace MarKit
 
         private void Despawn()
         {
+            if (despawning) return;
+
             OnDespawn.Invoke();
             despawning = true;
             Destroy(gameObject, 2f);

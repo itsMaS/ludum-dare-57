@@ -16,15 +16,21 @@ namespace MarKit
         public MonoBehaviour behavior => this as MonoBehaviour;
     }
 
+#if UNITY_EDITOR
+    [CustomPropertyDrawer(typeof(IMarKitAction), true)]
     [System.Serializable]
-    public class MarKitEvent
+    public class IMarkitActionDrawer : PolymorphicDrawer<IMarKitAction> { }
+#endif
+
+    public class MarKitEventBase
+    {
+    }
+
+
+    [System.Serializable]
+    public class MarKitEvent : MarKitEventBase
     {
 
-#if UNITY_EDITOR
-        [CustomPropertyDrawer(typeof(IMarKitAction), true)]
-        [System.Serializable]
-        public class IMarkitActionDrawer : PolymorphicDrawer<IMarKitAction> { }
-#endif
         [SerializeReference] public List<IMarKitAction> Actions = new List<IMarKitAction>();
         
         private UnityAction action;
@@ -48,6 +54,26 @@ namespace MarKit
         }
     }
 
+    public class MarKitEvent<Args> : MarKitEventBase
+    {
+                private UnityAction action;
+        public void Invoke(IMarkitEventCaller parent,  Args args) 
+        {
+
+        }
+        public void AddListener(UnityAction action)
+        {
+            this.action += action;
+        }
+
+        public void RemoveListener(UnityAction action)
+        {
+            this.action -= action;
+        }
+    }
+
+
+
 #if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(MarKitEvent))]
     public class MarKitEventDrawer : PropertyDrawer
@@ -64,11 +90,11 @@ namespace MarKit
             GUI.Box(boxRect, GUIContent.none, EditorStyles.helpBox);
 
             // Horizontal group for label and Invoke button
-            Rect headerRect = new Rect(position.x + 4, position.y + 2, position.width - 8, lineHeight);
+            Rect headerRect = new Rect(position.x + 4, position.y + 5, position.width - 8, lineHeight);
             float buttonWidth = 60f;
             float labelWidth = headerRect.width - buttonWidth - 4;
 
-            Rect labelRect = new Rect(headerRect.x, headerRect.y, labelWidth, lineHeight);
+            Rect labelRect = new Rect(headerRect.x + 20, headerRect.y, labelWidth-20, lineHeight);
             Rect buttonRect = new Rect(labelRect.xMax + 4, headerRect.y, buttonWidth, lineHeight);
 
             EditorGUI.LabelField(labelRect, label);
@@ -86,8 +112,8 @@ namespace MarKit
 
             // Draw property field inside box, below header
             Rect contentRect = new Rect(
-                position.x + 4,
-                headerRect.yMax + spacing,
+                position.x + 20,
+                headerRect.yMax + spacing -20,
                 position.width - 8,
                 EditorGUI.GetPropertyHeight(property, true) - lineHeight - spacing
             );
@@ -102,7 +128,7 @@ namespace MarKit
             float spacing = EditorGUIUtility.standardVerticalSpacing;
             float totalHeight = EditorGUIUtility.singleLineHeight + spacing;
             totalHeight += EditorGUI.GetPropertyHeight(property, true);
-            return totalHeight + 4; // some padding for box
+            return totalHeight -10; // some padding for box
         }
     }
 #endif

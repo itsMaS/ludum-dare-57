@@ -20,7 +20,8 @@ namespace MarKit
         private void OnDrawGizmos()
         {
             Gizmos.DrawWireCube(transform.position, new Vector3(200, heightInBlocks * blockSize));
-            Gizmos.DrawWireCube(transform.position + (heightInBlocks * blockSize * 0.5f * Vector3.down) + (blockOffset * blockSize * Vector3.right), new Vector3(2*blockSize, blockSize));
+            Gizmos.DrawWireCube(transform.position + (heightInBlocks * blockSize * 0.5f * Vector3.down) + (blockOffset * blockSize * Vector3.right), new Vector3(2*blockSize, blockSize*0.2f));
+            Gizmos.DrawWireCube(transform.position + (-heightInBlocks * blockSize * 0.5f * Vector3.down) + (blockOffset * blockSize * Vector3.right), new Vector3(2*blockSize, blockSize*0.2f));
         }
     }
 

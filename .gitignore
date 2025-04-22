@@ -75,3 +75,4 @@ crashlytics-build.properties
 
 Steam/*
 !Steam/steamcmd.exe
+Marketing

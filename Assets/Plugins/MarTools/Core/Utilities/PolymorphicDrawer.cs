@@ -40,7 +40,8 @@ namespace MarTools
             if (property.managedReferenceValue != null)
             {
                 // Draw the foldout for expanding/collapsing the property
-                property.isExpanded = EditorGUI.Foldout(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), property.isExpanded, label);
+                property.isExpanded = EditorGUI.Foldout(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), property.isExpanded,
+                    $"{property.managedReferenceValue.GetType().Name}");
 
                 if (property.isExpanded)
                 {
@@ -56,7 +57,7 @@ namespace MarTools
                 // Create a Rect for the button when no class is selected
                 Rect labelRect = new Rect(position.x, position.y, position.width/2, EditorGUIUtility.singleLineHeight);
 
-                GUI.Label(labelRect, new GUIContent(property.displayName));
+                GUI.Label(labelRect, new GUIContent("None"));
                 
                 Rect buttonRect = new Rect(position.x + position.width/2, position.y, position.width/2, EditorGUIUtility.singleLineHeight);
                 if (GUI.Button(buttonRect, $"{typeof(T).Name}"))
@@ -106,7 +107,7 @@ namespace MarTools
             // Create a Rect for the button below the property fields
             Rect buttonRect = new Rect(position.x+position.width*0.5f, position.y- EditorGUIUtility.singleLineHeight, position.width*0.5f, EditorGUIUtility.singleLineHeight);
             // Draw the button with GUI.Button instead of GUILayout
-            if (GUI.Button(buttonRect, $"{property.managedReferenceValue.GetType().Name}"))
+            if (GUI.Button(buttonRect, $"Change"))
             {
                 DrawDropdown(property);
             }
@@ -178,7 +179,7 @@ namespace MarTools
                 }
 
                 // Add space for the "Change type" button
-                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+                //totalHeight += EditorGUIUtility.singleLineHeight;// + EditorGUIUtility.standardVerticalSpacing;
             }
             else
             {
@@ -186,7 +187,7 @@ namespace MarTools
                 //totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             }
 
-            return totalHeight + 10;
+            return totalHeight;// + 10;
         }
     }
 #endif
