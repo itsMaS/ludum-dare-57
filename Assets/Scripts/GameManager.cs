@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Steamworks;
+using Steamworks.Data;
 
 
 #if UNITY_EDITOR
@@ -18,6 +20,7 @@ namespace MarKit
         public void Generate(params object[] argumants);
     }
 
+    [DefaultExecutionOrder(-200)]
     public class GameManager : Singleton<GameManager>, IMarkitEventCaller
     {
         public MarKitEvent OnRecordBeaten;
@@ -57,6 +60,8 @@ namespace MarKit
         bool scoreBeaten = false;
         private bool gameOver = false;
 
+        Leaderboard? leaderboard;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -70,26 +75,47 @@ namespace MarKit
                     a.Generate();
                 }
             }
+
+            LoadLeaderboards();
         }
+
+        private async void LoadLeaderboards()
+        {
+            Debug.Log($"Steam valid? : {SteamClient.IsValid}");
+            leaderboard = await SteamUserStats.FindLeaderboardAsync("GlobalLeaderboard");
+        }
+
 
         public void StartGame()
         {
             gameStarted = true;
         }
 
-        internal static void GameOver()
+        internal static async void GameOver()
         {
             if (Instance.gameOver) return;
             Instance.gameOver = true;
 
             //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
-            Debug.Log(Instance.currentScore);
+            int newScore = Instance.currentScore;
 
             if(Instance.currentScore > highscore)
             {
                 highscore = Instance.currentScore;
                 Instance.UpdateRecordPosition();
+            }
+
+            if(Instance.leaderboard.HasValue)
+            {
+                Debug.Log($"Submitting {newScore} score");
+                var result = await Instance.leaderboard.Value.SubmitScoreAsync(newScore);
+
+                Debug.Log($"Submitted successfully? : {result.HasValue} {result.Value.Score}");
+            }
+            else
+            {
+                Debug.Log("Failed to submit to steam");
             }
 
             Instance.OnGameOver.Invoke(Instance);
