@@ -102,6 +102,17 @@ namespace MarKit
         private async void LoadLeaderboards()
         {
             leaderboard = await SteamUserStats.FindOrCreateLeaderboardAsync("GlobalHighscores", LeaderboardSort.Descending, LeaderboardDisplay.Numeric);
+
+
+            if(leaderboard.HasValue)
+            {
+                var result = await leaderboard.Value.GetScoresAroundUserAsync(0, 0);
+
+                if(result != null)
+                {
+                    highscore = result[0].Score;
+                }
+            } 
         }
 
 

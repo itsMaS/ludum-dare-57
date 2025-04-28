@@ -10,6 +10,7 @@ namespace MarKit
     {
         [SerializeField] GameObject livesExample;
         [SerializeField] TextMeshProUGUI scoreText;
+        [SerializeField] TextMeshProUGUI highscoreText;
         [SerializeField] Image comboFillImage;
         [SerializeField] TextMeshProUGUI comboAmountText;
 
@@ -41,12 +42,19 @@ namespace MarKit
 
             GameManager.Instance.OnScoreChanged.AddListener(ScoreChanged);
 
+            UpdateHighscore();
             scoreText.SetText("0");
         }
 
         private void ScoreChanged(int arg0)
         {
+            UpdateHighscore();
             scoreTarget = arg0;
+        }
+
+        private void UpdateHighscore()
+        {
+            highscoreText.SetText(GameManager.highscore.ToString());
         }
 
         private void UpdateLives()
