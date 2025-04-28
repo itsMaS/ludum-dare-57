@@ -111,6 +111,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7508014572202542081}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnDetectEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -243,7 +255,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementTarget: {fileID: 0}
-  movementSpeed: 7
+  movementSpeed: 12
+  score: 50
 --- !u!61 &8738387689068151905
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -297,17 +310,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4379760530031814153}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 384ee7d96866b584c85d426ba18b901e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 8261335994728419982, guid: 97bac325a05c93c4cb8ebb94d0ecf975, type: 3}
+  bulletPrefab: {fileID: 8261335994728419982, guid: e633237f7fa36af44acf27ef827c1bca, type: 3}
   shootCooldown:
     duration: 2
     timeScaled: 1
-  numberOfBullets: 2
-  angle: 20
+  numberOfBullets: 3
+  angle: 360
   angleOffset: 0
   angleOffsetPerSecond: 0
   angleOffsetPerShot: 0

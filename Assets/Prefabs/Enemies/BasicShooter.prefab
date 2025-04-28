@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementTarget: {fileID: 0}
   movementSpeed: 5
+  score: 30
 --- !u!114 &1187458861121566403
 MonoBehaviour:
   m_ObjectHideFlags: 0

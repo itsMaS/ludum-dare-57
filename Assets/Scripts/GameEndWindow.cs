@@ -1,16 +1,34 @@
+using MarKit;
+using MarTools;
+using Steamworks;
+using System;
 using UnityEngine;
 
 public class GameEndWindow : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] Node rankingNode;
+
+    private void Awake()
     {
-        
+        GameManager.Instance.OnGameOver.AddListener(GameOver);
+        GameManager.Instance.OnRankingsLoaded.AddListener(RankingsLoaded);
+
+        gameObject.SetActive(false);
+        rankingNode.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void RankingsLoaded(LeaderboardData arg0)
     {
-        
+        rankingNode.Populate(arg0.entries, (el, index, node) =>
+        {
+            node.Texts[0].SetText($"{el.GlobalRank}.");
+            node.Texts[1].SetText($"{el.User.Name} {(SteamClient.SteamId == el.User.Id ? "<color=red>(You)" : "")}");
+            node.Texts[2].SetText($"{el.Score}");
+        });
+    }
+
+    private void GameOver()
+    {
+        gameObject.SetActive(true);
     }
 }

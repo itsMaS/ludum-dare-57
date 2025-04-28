@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6223797933144328324}
   - component: {fileID: 8261335994728419982}
   m_Layer: 0
-  m_Name: EnemyBullet
+  m_Name: bullet_enemy_passthrough
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -21,6 +21,8 @@ public class EnemyBehavior : MarKitBehavior
     public Transform movementTarget;
     public float movementSpeed = 5;
 
+    public int score = 10;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -28,6 +30,13 @@ public class EnemyBehavior : MarKitBehavior
         an = GetComponentInChildren<Animator>();
 
         entity = GetComponent<GameEntityBehavior>();
+
+        entity.OnDied.AddListener(Died);
+    }
+
+    private void Died()
+    {
+        GameManager.Instance.AddScore(score, transform.position);
     }
 
     private void FixedUpdate()

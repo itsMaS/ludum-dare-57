@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using Steamworks;
 using Steamworks.Data;
+using TMPro;
 
 
 #if UNITY_EDITOR
@@ -20,11 +21,24 @@ namespace MarKit
         public void Generate(params object[] argumants);
     }
 
+    public class LeaderboardData
+    {
+        public LeaderboardEntry[] entries;
+
+        public LeaderboardData(LeaderboardEntry[] entries)
+        {
+            this.entries = entries;
+        }
+    }
+
     [DefaultExecutionOrder(-200)]
     public class GameManager : Singleton<GameManager>, IMarkitEventCaller
     {
         public MarKitEvent OnRecordBeaten;
         public MarKitEvent OnGameOver;
+        public UnityEvent<LeaderboardData> OnRankingsLoaded;
+
+        public UnityEvent<int> OnScoreChanged;
 
         public override bool AddToDontDestroyOnLoad => false;
 
@@ -40,10 +54,9 @@ namespace MarKit
             }
         }
 
-        public int currentScore => -Mathf.RoundToInt(playerDepth);
-
         [SerializeField] Transform killTrigger;
         [SerializeField] Transform recordMarker;
+        [SerializeField] GameObject scoreIndicator;
 
         [SerializeField] float zoneMovementSpeed = 5;
 
@@ -62,6 +75,11 @@ namespace MarKit
 
         Leaderboard? leaderboard;
 
+        public int currentScore { get; private set; }
+
+        public int comboLevel = 1;
+        public float comboProgress = 0;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -76,19 +94,49 @@ namespace MarKit
                 }
             }
 
+            comboLevel = 1;
+
             LoadLeaderboards();
         }
 
         private async void LoadLeaderboards()
         {
-            Debug.Log($"Steam valid? : {SteamClient.IsValid}");
-            leaderboard = await SteamUserStats.FindLeaderboardAsync("GlobalLeaderboard");
+            leaderboard = await SteamUserStats.FindOrCreateLeaderboardAsync("GlobalHighscores", LeaderboardSort.Descending, LeaderboardDisplay.Numeric);
         }
 
 
         public void StartGame()
         {
+            if (gameStarted) return;
             gameStarted = true;
+        }
+
+        public void AddScore(int score, Vector3 position)
+        {
+            int finalScore = comboLevel * score;
+            currentScore += finalScore;
+
+            OnScoreChanged.Invoke(currentScore);
+
+            var scoreIndication = Instantiate(scoreIndicator, position, Quaternion.identity);
+            TextMeshPro text = scoreIndication.GetComponentInChildren<TextMeshPro>();
+
+
+            scoreIndication.transform.localScale = Vector3.one * ((float)finalScore).Remap(10, 400, 1, 5);
+
+            scoreIndication.gameObject.SetActive(true);
+            text.SetText($"+{finalScore}");
+            Destroy(scoreIndication, 2);
+
+
+            comboProgress += score / 60f;
+            float leftOver = comboProgress % 1;
+
+            if(comboProgress >= 1)
+            {
+                comboLevel++;
+                comboProgress = leftOver;
+            }
         }
 
         internal static async void GameOver()
@@ -108,10 +156,16 @@ namespace MarKit
 
             if(Instance.leaderboard.HasValue)
             {
+                Debug.Log($"Name {SteamClient.Name}");
+
                 Debug.Log($"Submitting {newScore} score");
                 var result = await Instance.leaderboard.Value.SubmitScoreAsync(newScore);
 
-                Debug.Log($"Submitted successfully? : {result.HasValue} {result.Value.Score}");
+                Debug.Log($"Submitted successfully? : {result.HasValue} Value: {result.Value.Score}");
+                if(result.HasValue)
+                {
+                    Debug.Log($"New highscore? {result.Value.Changed} Old highscore {result.Value.OldGlobalRank} New highscore {result.Value.NewGlobalRank}");
+                }
             }
             else
             {
@@ -119,6 +173,14 @@ namespace MarKit
             }
 
             Instance.OnGameOver.Invoke(Instance);
+
+            if(Instance.leaderboard.HasValue)
+            {
+                var result = await Instance.leaderboard.Value.GetScoresAroundUserAsync();
+
+                Instance.OnRankingsLoaded.Invoke(new LeaderboardData(result));
+            }
+
         }
 
         private void UpdateRecordPosition()
@@ -133,10 +195,32 @@ namespace MarKit
 
         private void Update()
         {
+            if(player.transform.position.y <= 20)
+            {
+                StartGame();
+            }
+
+
             if(gameStarted)
             {
                 killTrigger.transform.Translate(Vector2.down * Time.deltaTime * zoneMovementSpeed);
             }
+
+            comboProgress -= Time.deltaTime * 0.025f * comboLevel;
+            if(comboProgress <= 0)
+            {
+                if(comboLevel <= 1)
+                {
+                    comboProgress = 0;
+                }
+                else
+                {
+                    comboLevel--;
+                    comboProgress = 1;
+                }
+
+            }
+
 
 
             if(playerDepth < nextHeight+100)
@@ -152,10 +236,14 @@ namespace MarKit
 
             if(Input.GetKeyDown(KeyCode.R))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                Restart();
             }
         }
 
+        public void Restart()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
 
         private void AddTemplate()
         {
@@ -195,6 +283,12 @@ namespace MarKit
         private void OnDrawGizmos()
         {
             Gizmos.DrawLine(Vector3.left*500 - Vector3.down * nextHeight, Vector3.right*500 - Vector3.down * nextHeight);
+        }
+
+        internal void ResetCombo()
+        {
+            comboLevel = 1;
+            comboProgress = 0;
         }
     }
 

@@ -10,7 +10,7 @@ public class ProjectileLauncher : MarKitBehavior
     public Cooldown shootCooldown;
     public Vector2 direction { get; set; }
     public int numberOfBullets = 4;
-    public float angle = 90;
+    [Range(0,360)] public float angle = 90;
     public float angleOffset = 0;
     public float angleOffsetPerSecond = 0;
     public float angleOffsetPerShot = 0;
@@ -39,17 +39,17 @@ public class ProjectileLauncher : MarKitBehavior
         }
     }
 
-    private void Shoot()
+    public void Shoot()
     {
         Vector2 toPlayer = GameManager.Instance.player.transform.position - transform.position;
         toPlayer.Normalize(); // Normalize to get a unit vector for consistent direction
 
-        float baseAngle = Mathf.Atan2(toPlayer.y, toPlayer.x);// + Mathf.PI; // Convert to angle in radians
+        float baseAngle = aimTowardsPlayer ? Mathf.Atan2(toPlayer.y, toPlayer.x) : 0;// + Mathf.PI; // Convert to angle in radians
 
         for (int i = 0; i < numberOfBullets; i++)
         {
             float t = (float)i / (numberOfBullets - 1); // Ensures full arc is covered
-            float arc = Mathf.Deg2Rad * angle;
+            float arc = Mathf.Deg2Rad * (angle != 360 ? angle : angle - 360/numberOfBullets);
             float offset = arc * (t - 0.5f) + angleOffset * Mathf.Deg2Rad; // Spread evenly around center (0 = forward)
 
             float finalAngle = baseAngle + offset;

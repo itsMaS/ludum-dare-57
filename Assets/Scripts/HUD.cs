@@ -1,16 +1,26 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MarKit
 {
     public class HUD : MonoBehaviour
     {
         [SerializeField] GameObject livesExample;
+        [SerializeField] TextMeshProUGUI scoreText;
+        [SerializeField] Image comboFillImage;
+        [SerializeField] TextMeshProUGUI comboAmountText;
 
         PlayerController player;
 
         List<GameObject> LivesIndicators = new List<GameObject>();
+
+        float scoreTarget;
+        float currentScore;
+        float scoreVelocity;
+
 
         private void Start()
         {
@@ -27,6 +37,16 @@ namespace MarKit
 
             player.OnTakeDamage.AddListener(UpdateLives);
             UpdateLives();
+
+
+            GameManager.Instance.OnScoreChanged.AddListener(ScoreChanged);
+
+            scoreText.SetText("0");
+        }
+
+        private void ScoreChanged(int arg0)
+        {
+            scoreTarget = arg0;
         }
 
         private void UpdateLives()
@@ -49,6 +69,16 @@ namespace MarKit
                 }
 
             }
+        }
+
+        private void Update()
+        {
+            currentScore = Mathf.SmoothDamp(currentScore, scoreTarget, ref scoreVelocity, 0.2f, 999, Time.deltaTime);
+            scoreText.SetText(Mathf.RoundToInt(currentScore).ToString());
+
+            comboFillImage.fillAmount = GameManager.Instance.comboProgress;
+
+            comboAmountText.SetText($"x{GameManager.Instance.comboLevel}");
         }
     }
 }

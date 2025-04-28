@@ -142,6 +142,8 @@ namespace MarKit
 
             if(damageCooldown.TryPerform())
             {
+                GameManager.Instance.ResetCombo();
+
                 foreach (var item in Physics2D.OverlapCircleAll(transform.position, 5))
                 {
                     if(item.gameObject.CompareTag("Enemy") && item.TryGetComponent<EnemyBehavior>(out var enemy))
