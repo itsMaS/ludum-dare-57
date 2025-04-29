@@ -35,6 +35,14 @@ namespace MarTools
             }
         }
 
+        public void Clear()
+        {
+            foreach (var item in Children)
+            {
+                item.gameObject.SetActive(false);
+            }
+        }
+
 
         /// <summary>
         /// Populates the parent container using this node as an example

@@ -30,5 +30,6 @@ public class GameEndWindow : MonoBehaviour
     private void GameOver()
     {
         gameObject.SetActive(true);
+        rankingNode.Clear();
     }
 }

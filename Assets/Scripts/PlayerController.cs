@@ -183,5 +183,18 @@ namespace MarKit
         {
             TakeDamage();
         }
+
+        internal void Respawn()
+        {
+            currentLives = maxLives;
+            transform.position = new Vector3(0, 60, 0);
+
+            rb.gravityScale = 0;
+            rb.linearDamping = 50;
+
+            GetComponentInChildren<Animator>().Play("Fly");
+
+            isDead = false;
+        }
     }
 }

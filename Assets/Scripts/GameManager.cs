@@ -36,11 +36,12 @@ namespace MarKit
     {
         public MarKitEvent OnRecordBeaten;
         public MarKitEvent OnGameOver;
+        public MarKitEvent OnRestart;
         public UnityEvent<LeaderboardData> OnRankingsLoaded;
 
         public UnityEvent<int> OnScoreChanged;
 
-        public override bool AddToDontDestroyOnLoad => false;
+        public override bool AddToDontDestroyOnLoad => true;
 
         public static int highscore
         {
@@ -80,6 +81,8 @@ namespace MarKit
         public int comboLevel = 1;
         public float comboProgress = 0;
 
+        public List<LevelTemplate> LoadedLevels = new List<LevelTemplate>();
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -95,7 +98,6 @@ namespace MarKit
             }
 
             comboLevel = 1;
-
             LoadLeaderboards();
         }
 
@@ -253,7 +255,26 @@ namespace MarKit
 
         public void Restart()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            nextHeight = 0;
+
+            gameOver = false;
+            gameStarted = false;
+            killTrigger.transform.position = new Vector3(0, 100, 0);
+
+            player.Respawn();
+
+            foreach (var item in LoadedLevels)
+            {
+                Destroy(item.gameObject);
+            }
+
+            foreach (var item in FindObjectsOfType<BulletBehavior>())
+            {
+                Destroy(item.gameObject);
+            }
+
+            LoadedLevels.Clear();
+            OnRestart.Invoke(this);
         }
 
         private void AddTemplate()
@@ -289,6 +310,8 @@ namespace MarKit
             {
                 item.Generate();
             }
+
+            LoadedLevels.Add(instance);
         }
 
         private void OnDrawGizmos()

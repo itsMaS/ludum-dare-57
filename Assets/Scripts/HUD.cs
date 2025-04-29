@@ -37,9 +37,11 @@ namespace MarKit
             livesExample.gameObject.SetActive(false);
 
             player.OnTakeDamage.AddListener(UpdateLives);
+
+
             UpdateLives();
 
-
+            GameManager.Instance.OnRestart.AddListener(UpdateLives);
             GameManager.Instance.OnScoreChanged.AddListener(ScoreChanged);
 
             UpdateHighscore();
