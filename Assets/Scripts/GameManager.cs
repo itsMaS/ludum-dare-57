@@ -1,14 +1,9 @@
 using MarTools;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using System.Linq;
-using Steamworks;
-using Steamworks.Data;
 using TMPro;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -21,15 +16,6 @@ namespace MarKit
         public void Generate(params object[] argumants);
     }
 
-    public class LeaderboardData
-    {
-        public LeaderboardEntry[] entries;
-
-        public LeaderboardData(LeaderboardEntry[] entries)
-        {
-            this.entries = entries;
-        }
-    }
 
     [DefaultExecutionOrder(-200)]
     public class GameManager : Singleton<GameManager>, IMarkitEventCaller
@@ -37,7 +23,6 @@ namespace MarKit
         public MarKitEvent OnRecordBeaten;
         public MarKitEvent OnGameOver;
         public MarKitEvent OnRestart;
-        public UnityEvent<LeaderboardData> OnRankingsLoaded;
 
         public UnityEvent<int> OnScoreChanged;
 
@@ -74,8 +59,6 @@ namespace MarKit
         bool scoreBeaten = false;
         private bool gameOver = false;
 
-        Leaderboard? leaderboard;
-
         public int currentScore { get; private set; }
 
         public int comboLevel = 1;
@@ -98,25 +81,7 @@ namespace MarKit
             }
 
             comboLevel = 1;
-            LoadLeaderboards();
         }
-
-        private async void LoadLeaderboards()
-        {
-            leaderboard = await SteamUserStats.FindOrCreateLeaderboardAsync("GlobalHighscores", LeaderboardSort.Descending, LeaderboardDisplay.Numeric);
-
-
-            if(leaderboard.HasValue)
-            {
-                var result = await leaderboard.Value.GetScoresAroundUserAsync(0, 0);
-
-                if(result != null)
-                {
-                    highscore = result[0].Score;
-                }
-            } 
-        }
-
 
         public void StartGame()
         {
@@ -152,7 +117,7 @@ namespace MarKit
             }
         }
 
-        internal static async void GameOver()
+        internal static void GameOver()
         {
             if (Instance.gameOver) return;
             Instance.gameOver = true;
@@ -167,33 +132,7 @@ namespace MarKit
                 Instance.UpdateRecordPosition();
             }
 
-            if(Instance.leaderboard.HasValue)
-            {
-                Debug.Log($"Name {SteamClient.Name}");
-
-                Debug.Log($"Submitting {newScore} score");
-                var result = await Instance.leaderboard.Value.SubmitScoreAsync(newScore);
-
-                Debug.Log($"Submitted successfully? : {result.HasValue} Value: {result.Value.Score}");
-                if(result.HasValue)
-                {
-                    Debug.Log($"New highscore? {result.Value.Changed} Old highscore {result.Value.OldGlobalRank} New highscore {result.Value.NewGlobalRank}");
-                }
-            }
-            else
-            {
-                Debug.Log("Failed to submit to steam");
-            }
-
             Instance.OnGameOver.Invoke(Instance);
-
-            if(Instance.leaderboard.HasValue)
-            {
-                var result = await Instance.leaderboard.Value.GetScoresAroundUserAsync();
-
-                Instance.OnRankingsLoaded.Invoke(new LeaderboardData(result));
-            }
-
         }
 
         private void UpdateRecordPosition()
@@ -275,6 +214,9 @@ namespace MarKit
 
             LoadedLevels.Clear();
             OnRestart.Invoke(this);
+
+            currentScore = 0;
+            OnScoreChanged.Invoke(currentScore);
         }
 
         private void AddTemplate()

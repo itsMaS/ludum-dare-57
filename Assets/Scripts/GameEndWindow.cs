@@ -2,6 +2,8 @@ using MarKit;
 using MarTools;
 using Steamworks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameEndWindow : MonoBehaviour
@@ -10,26 +12,42 @@ public class GameEndWindow : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.Instance.OnGameOver.AddListener(GameOver);
-        GameManager.Instance.OnRankingsLoaded.AddListener(RankingsLoaded);
-
         gameObject.SetActive(false);
         rankingNode.gameObject.SetActive(false);
+
+        LeaderboardManager.Instance.OnLeaderboardUpdate.AddListener(Load);
     }
 
-    private void RankingsLoaded(LeaderboardData arg0)
-    {
-        rankingNode.Populate(arg0.entries, (el, index, node) =>
-        {
-            node.Texts[0].SetText($"{el.GlobalRank}.");
-            node.Texts[1].SetText($"{el.User.Name} {(SteamClient.SteamId == el.User.Id ? "<color=red>(You)" : "")}");
-            node.Texts[2].SetText($"{el.Score}");
-        });
-    }
-
-    private void GameOver()
+    private void Load(List<LeaderboardManager.Ranking> arg0)
     {
         gameObject.SetActive(true);
-        rankingNode.Clear();
+
+        int playerIndex = arg0.FindIndex(x => x.isYou);
+
+        List<LeaderboardManager.Ranking> Shown = new List<LeaderboardManager.Ranking>();
+        Shown.Add(arg0[playerIndex]);
+
+        int range = 2;
+
+        for (int i = 1; i <= range; i++)
+        {
+            if(playerIndex - i >= 0)
+                Shown.Insert(0,(arg0[playerIndex - i]));
+            
+            if(playerIndex + i < arg0.Count)
+                Shown.Add(arg0[playerIndex + i]);
+        }
+
+        rankingNode.Populate(Shown, (el, index, node) =>
+        {
+            var tween = node.GetComponent<TweenCore>();
+
+            tween.delayRange = index * 0.2f * Vector2.one;
+            tween.PlayForwards();
+
+            node.Texts[0].SetText($"{el.Rank}.");
+            node.Texts[1].SetText($"{el.Name} {(el.isYou ? "<color=red>(You)" : "")}");
+            node.Texts[2].SetText($"{el.Score}");
+        });
     }
 }
