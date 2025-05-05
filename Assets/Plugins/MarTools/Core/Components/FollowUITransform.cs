@@ -7,6 +7,8 @@ public class FollowUITransform : MonoBehaviour
     [SerializeField] Camera uiCamera => canvas.worldCamera;
     [SerializeField] Vector3 offset;  // Optional offset from followed position
 
+    [SerializeField] float sortOffset;
+
     Canvas canvas;
 
 
@@ -21,7 +23,7 @@ public class FollowUITransform : MonoBehaviour
         // Convert RectTransform position to screen space
         Vector3 screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, follow.position);
 
-        float distanceFromCamera = canvas.planeDistance + canvas.worldCamera.transform.position.z;
+        float distanceFromCamera = canvas.planeDistance + canvas.worldCamera.transform.position.z + sortOffset;
 
         // Convert screen position to world space
         Ray ray = uiCamera ? uiCamera.ScreenPointToRay(screenPos) : Camera.main.ScreenPointToRay(screenPos);

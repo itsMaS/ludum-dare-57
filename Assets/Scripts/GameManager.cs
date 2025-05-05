@@ -25,6 +25,8 @@ namespace MarKit
         public MarKitEvent OnRestart;
 
         public UnityEvent<int> OnScoreChanged;
+        public UnityEvent OnComboGained;
+        public UnityEvent OnComboLost;
 
         public override bool AddToDontDestroyOnLoad => true;
 
@@ -43,6 +45,7 @@ namespace MarKit
         [SerializeField] Transform killTrigger;
         [SerializeField] Transform recordMarker;
         [SerializeField] GameObject scoreIndicator;
+        [SerializeField] RectTransform cursorTr;
 
         [SerializeField] float zoneMovementSpeed = 5;
 
@@ -55,7 +58,7 @@ namespace MarKit
         private float nextHeight = 0;
         private float xPosition = 0;
 
-        private bool gameStarted = false;
+        public bool gameStarted { get; private set; } = false;
         bool scoreBeaten = false;
         private bool gameOver = false;
 
@@ -65,6 +68,8 @@ namespace MarKit
         public float comboProgress = 0;
 
         public List<LevelTemplate> LoadedLevels = new List<LevelTemplate>();
+
+        private bool isPaused = false;
 
         protected override void Initialize()
         {
@@ -87,6 +92,8 @@ namespace MarKit
         {
             if (gameStarted) return;
             gameStarted = true;
+
+            isPaused = true;
         }
 
         public void AddScore(int score, Vector3 position)
@@ -113,6 +120,7 @@ namespace MarKit
             if(comboProgress >= 1)
             {
                 comboLevel++;
+                OnComboGained.Invoke();
                 comboProgress = leftOver;
             }
         }
@@ -132,7 +140,10 @@ namespace MarKit
                 Instance.UpdateRecordPosition();
             }
 
+            Instance.gameStarted = false;
             Instance.OnGameOver.Invoke(Instance);
+
+            Instance.Pause();
         }
 
         private void UpdateRecordPosition()
@@ -147,6 +158,8 @@ namespace MarKit
 
         private void Update()
         {
+            Cursor.visible = false;
+
             if(player.transform.position.y <= 20)
             {
                 StartGame();
@@ -168,6 +181,7 @@ namespace MarKit
                 else
                 {
                     comboLevel--;
+                    OnComboLost.Invoke();
                     comboProgress = 1;
                 }
 
@@ -190,6 +204,27 @@ namespace MarKit
             {
                 Restart();
             }
+
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                if(isPaused)
+                {
+                    Unpause();
+                }
+                else
+                {
+                    Pause();
+                }
+            }
+
+            Vector2 localPoint;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                cursorTr.parent as RectTransform,
+                Input.mousePosition,
+                null,
+                out localPoint
+            );
+            cursorTr.anchoredPosition = localPoint;
         }
 
         public void Restart()
@@ -217,6 +252,11 @@ namespace MarKit
 
             currentScore = 0;
             OnScoreChanged.Invoke(currentScore);
+
+            if(isPaused)
+            {
+                Unpause();
+            }
         }
 
         private void AddTemplate()
@@ -265,6 +305,23 @@ namespace MarKit
         {
             comboLevel = 1;
             comboProgress = 0;
+
+            OnComboLost.Invoke();
+        }
+
+        internal void Unpause()
+        {
+            isPaused = false;
+            PauseMenu.Close();
+
+            Time.timeScale = 1;
+        }
+        public void Pause()
+        {
+            isPaused = true;
+            PauseMenu.Open();
+
+            Time.timeScale = 0;
         }
     }
 

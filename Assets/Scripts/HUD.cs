@@ -1,3 +1,4 @@
+using MarTools;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -13,6 +14,9 @@ namespace MarKit
         [SerializeField] TextMeshProUGUI highscoreText;
         [SerializeField] Image comboFillImage;
         [SerializeField] TextMeshProUGUI comboAmountText;
+
+        [SerializeField]
+        GroupBehavior[] ComboEffects;
 
         PlayerController player;
 
@@ -41,11 +45,32 @@ namespace MarKit
 
             UpdateLives();
 
-            GameManager.Instance.OnRestart.AddListener(UpdateLives);
+            GameManager.Instance.OnRestart.AddListener(Restart);
             GameManager.Instance.OnScoreChanged.AddListener(ScoreChanged);
+
+            GameManager.Instance.OnComboGained.AddListener(UpdateCombo);
+            GameManager.Instance.OnComboLost.AddListener(UpdateCombo);
 
             UpdateHighscore();
             scoreText.SetText("0");
+
+
+            UpdateCombo();
+        }
+
+        private void Restart()
+        {
+            UpdateLives();
+            UpdateCombo();
+        }
+
+        private void UpdateCombo()
+        {
+            int comboIndex = GameManager.Instance.comboLevel -1;
+
+            comboIndex = Math.Clamp(comboIndex, 0, ComboEffects.Length-1);
+
+            ComboEffects[comboIndex].Activate();
         }
 
         private void ScoreChanged(int arg0)

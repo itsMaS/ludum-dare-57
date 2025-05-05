@@ -29,6 +29,7 @@ namespace MarTools
         public bool relative = true;
         public bool timeScaled = true;
         public Vector2 delayRange = Vector2.zero;
+        public bool resetOnEnable = false;
 
         [Range(0,1)] public float startingPosition = 0;
 
@@ -57,6 +58,10 @@ namespace MarTools
 
         private void OnEnable()
         {
+            if(resetOnEnable)
+            {
+                SetPose(startingPosition);
+            }
             if (playOnEnable)
             {
                 PlayForwards();

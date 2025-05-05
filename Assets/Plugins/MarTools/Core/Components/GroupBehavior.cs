@@ -98,12 +98,21 @@ namespace MarTools
                 {
                     script.groupID = newName;
                     selection = GroupIDs.IndexOf(newName);
+
+                    EditorUtility.SetDirty(script);
                 }
             }
             else
             {
-                script.groupID = GroupIDs[selection];
-    
+                string newId = GroupIDs[selection];
+
+                if(newId != script.groupID)
+                {
+                    script.groupID = newId;
+                    EditorUtility.SetDirty(script);
+
+                }
+
                 var objects = FindObjectsOfType<GroupBehavior>().ToList().Where(item => item.groupID == script.groupID && 
                 (!script.limitScopeToSiblings || item.transform.parent == script.transform.parent)).ToList().ConvertAll(item => item.gameObject);
                 if (objects.Count > 1 && GUILayout.Button($"Select All [{objects.Count}]"))

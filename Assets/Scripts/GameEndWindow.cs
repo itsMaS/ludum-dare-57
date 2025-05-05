@@ -16,12 +16,16 @@ public class GameEndWindow : MonoBehaviour
         rankingNode.gameObject.SetActive(false);
 
         LeaderboardManager.Instance.OnLeaderboardUpdate.AddListener(Load);
+        GameManager.Instance.OnGameOver.AddListener(OpenEndWindow);
+    }
+
+    private void OpenEndWindow()
+    {
+        gameObject.SetActive(true);
     }
 
     private void Load(List<LeaderboardManager.Ranking> arg0)
     {
-        gameObject.SetActive(true);
-
         int playerIndex = arg0.FindIndex(x => x.isYou);
 
         List<LeaderboardManager.Ranking> Shown = new List<LeaderboardManager.Ranking>();
