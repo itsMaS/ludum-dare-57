@@ -1,6 +1,7 @@
 using MarTools;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Events;
 
 namespace MarKit
@@ -32,6 +33,7 @@ namespace MarKit
 
     public class MarkitPlaySound : IMarKitAction
     {
+        [SerializeField] AudioMixerGroup group;
         [SerializeField] AudioClip clip;
         [SerializeField] float volume = 1;
         [SerializeField] float pitchDeviation = 0f;
@@ -45,6 +47,8 @@ namespace MarKit
 
             source.pitch = 1 + Random.value.Remap01(-pitchDeviation, pitchDeviation);
             source.clip = clip;
+
+            source.outputAudioMixerGroup = group;
             source.Play();
         }
     }

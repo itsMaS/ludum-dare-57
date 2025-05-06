@@ -13,6 +13,8 @@ public class PauseMenu : Singleton<PauseMenu>
     [SerializeField] UnityEngine.UI.Button resumeButton;
     [SerializeField] UnityEngine.UI.Button quitButton;
 
+    [SerializeField] GroupBehavior gameOverSection;
+
     CanvasGroup cg;
 
     public UnityEvent OnClose;
@@ -53,14 +55,14 @@ public class PauseMenu : Singleton<PauseMenu>
     internal static void Close()
     {
         Instance.OnClose.Invoke();
-        Instance.ClickButton(() => Instance.gameObject.SetActive(false));
+        Instance.ClickButton(() => Instance.gameObject.SetActive(false), 0.5f);
     }
 
     internal static void Open()
     {
         Instance.gameObject.SetActive(true);
 
-        if(GameManager.Instance.gameStarted)
+        if(GameManager.Instance.gameStarted && !GameManager.Instance.gameOver)
         {
             Instance.restartButton.gameObject.SetActive(true);
             Instance.resumeButton.gameObject.SetActive(true);
@@ -76,16 +78,28 @@ public class PauseMenu : Singleton<PauseMenu>
         Instance.OnOpen.Invoke();
     }
 
-    public void ClickButton(UnityAction action)
+    public static void OpenEndWindow()
+    {
+        Open();
+
+        Instance.gameOverSection.Activate();
+    }
+
+    public void ClickButton(UnityAction action, float duration = 0.2f)
     {
         cg.interactable = false;
         cg.blocksRaycasts = false;
 
-        this.DelayedAction(0.2f, () =>
+        this.DelayedAction(duration, () =>
         {
             cg.interactable = true;
             cg.blocksRaycasts = true;
             action?.Invoke();
         }, null, false);
+    }
+
+    public void Navigate(GroupBehavior groupBehavior)
+    {
+        ClickButton(() => groupBehavior.Activate());
     }
 }

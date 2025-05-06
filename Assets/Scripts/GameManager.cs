@@ -60,7 +60,7 @@ namespace MarKit
 
         public bool gameStarted { get; private set; } = false;
         bool scoreBeaten = false;
-        private bool gameOver = false;
+        public bool gameOver { get; private set; } = false;
 
         public int currentScore { get; private set; }
 
@@ -86,6 +86,7 @@ namespace MarKit
             }
 
             comboLevel = 1;
+            isPaused = true;
         }
 
         public void StartGame()
@@ -93,7 +94,6 @@ namespace MarKit
             if (gameStarted) return;
             gameStarted = true;
 
-            isPaused = true;
         }
 
         public void AddScore(int score, Vector3 position)
@@ -143,7 +143,17 @@ namespace MarKit
             Instance.gameStarted = false;
             Instance.OnGameOver.Invoke(Instance);
 
-            Instance.Pause();
+            Time.timeScale = 0.2f;
+
+            Instance.DelayedAction(1.5f, () =>
+            {
+                Time.timeScale = 0;
+                Instance.isPaused = true;
+                PauseMenu.OpenEndWindow();
+
+
+            }, null, false, Utilities.Ease.InQuad);
+
         }
 
         private void UpdateRecordPosition()
@@ -205,7 +215,7 @@ namespace MarKit
                 Restart();
             }
 
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if(Input.GetKeyDown(KeyCode.Escape) && !gameOver)
             {
                 if(isPaused)
                 {

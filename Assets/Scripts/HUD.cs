@@ -60,6 +60,10 @@ namespace MarKit
 
         private void Restart()
         {
+            currentScore = 0;
+            scoreTarget = 0;
+            scoreText.SetText("0");
+
             UpdateLives();
             UpdateCombo();
         }
