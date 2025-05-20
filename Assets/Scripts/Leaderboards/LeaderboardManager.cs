@@ -22,6 +22,7 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
         {
             Score = entry.Score;
             Name = entry.User.Name;
+            Rank = entry.GlobalRank;
 
             isYou = entry.User.Id == SteamClient.SteamId;
         }
@@ -39,11 +40,16 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
         }
     }
 
-    public UnityEvent<List<Ranking>> OnLeaderboardUpdate;
+    [System.Serializable]
+    public class LeaderboardResult
+    {
+        public List<Ranking> Rankings = new List<Ranking>();
+    }
 
     Leaderboard? globalLeaderboard;
 
-    private List<Ranking> Rankings = new List<Ranking>();
+    LeaderboardResult result = null;
+    System.Action<LeaderboardResult> leaderboardAsk = null;
 
     private void Start()
     {
@@ -64,42 +70,31 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
     {
         Debug.Log("Leaderboard Manager loaded");
 
-        Rankings.Clear();
+        result = null;
         globalLeaderboard = await SteamUserStats.FindOrCreateLeaderboardAsync("global_leaderboard", LeaderboardSort.Descending, LeaderboardDisplay.Numeric);
 
         if (globalLeaderboard.HasValue)
         {
-            var results = await globalLeaderboard.Value.GetScoresAroundUserAsync(10, 10);
+            var results = await globalLeaderboard.Value.GetScoresAroundUserAsync(2, 2);
 
+            result = new LeaderboardResult();
             if (results != null)
             {
                 foreach (var ranking in results)
                 {
-                    Rankings.Add(new Ranking(ranking));
+                    result.Rankings.Add(new Ranking(ranking));
                 }
 
-                for (int i = 1; i <= 200; i++)
-                {
-                    if (!Rankings.Exists(x => x.Rank == i))
-                    {
-                        Rankings.Add(new Ranking(i));
-                    }
-                }
+                leaderboardAsk?.Invoke(result);
+                leaderboardAsk = null;
 
-                Rankings = Rankings.OrderByDescending(x => x.Score).ToList();
-                for (int i = 0; i < Rankings.Count; i++)
-                {
-                    Rankings[i].Rank = i + 1;
-                }
-
+                Debug.Log("Success");
             }
             else
             {
                 Debug.LogError("Failed to get rankings");
                 return;
             }
-
-            OnLeaderboardUpdate.Invoke(Rankings);
         }
         else
         {
@@ -107,6 +102,28 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
             return;
         }
 
-        Debug.Log("Success");
+    }
+
+    internal void RequestLeaderboard(System.Action<LeaderboardResult> leaderboardsLoaded)
+    {
+        if(result != null)
+        {
+            leaderboardsLoaded.Invoke(result);
+        }
+        else
+        {
+            leaderboardAsk = leaderboardsLoaded;
+            FetchLeaderboards();
+        }
+    }
+
+    internal void ResetHighscore()
+    {
+        if(globalLeaderboard.HasValue)
+        {
+            globalLeaderboard.Value.ReplaceScore(0);
+            GameManager.highscore = 0;
+            result = null;
+        }
     }
 }

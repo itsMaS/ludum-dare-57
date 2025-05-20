@@ -11,7 +11,6 @@ public class PauseMenu : Singleton<PauseMenu>
     [SerializeField] UnityEngine.UI.Button restartButton;
     [SerializeField] UnityEngine.UI.Button playButton;
     [SerializeField] UnityEngine.UI.Button resumeButton;
-    [SerializeField] UnityEngine.UI.Button quitButton;
 
     [SerializeField] GroupBehavior gameOverSection;
 
@@ -23,33 +22,28 @@ public class PauseMenu : Singleton<PauseMenu>
     private void Start()
     {
         cg = GetComponent<CanvasGroup>();
-
-        restartButton.onClick.AddListener(() => ClickButton(Restart));
-        playButton.onClick.AddListener(Play);
-        resumeButton.onClick.AddListener(Resume);
-        quitButton.onClick.AddListener(() => ClickButton(Quit));
-
         GameManager.Instance.Pause();
     }
 
-    private void Quit()
+    public void Quit()
     {
         Application.Quit();
     }
 
-    private void Play()
+    public void Resume()
     {
-        GameManager.Instance.Restart();
+        ClickButton(() =>
+        {
+            GameManager.Instance.Unpause();
+        });
     }
 
-    private void Resume()
+    public void Restart()
     {
-        GameManager.Instance.Unpause();
-    }
-
-    private void Restart()
-    {
-        GameManager.Instance.Restart();
+        ClickButton(() =>
+        {
+            GameManager.Instance.Restart();
+        });
     }
 
     internal static void Close()

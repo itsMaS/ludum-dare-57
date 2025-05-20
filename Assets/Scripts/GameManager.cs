@@ -87,6 +87,8 @@ namespace MarKit
 
             comboLevel = 1;
             isPaused = true;
+
+            Application.targetFrameRate = 90;
         }
 
         public void StartGame()

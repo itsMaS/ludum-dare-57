@@ -15,7 +15,7 @@ public class GameEndWindow : MonoBehaviour
         gameObject.SetActive(false);
         rankingNode.gameObject.SetActive(false);
 
-        LeaderboardManager.Instance.OnLeaderboardUpdate.AddListener(Load);
+        //LeaderboardManager.Instance.OnLeaderboardUpdate.AddListener(Load);
         GameManager.Instance.OnGameOver.AddListener(OpenEndWindow);
     }
 

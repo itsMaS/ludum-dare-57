@@ -42,4 +42,9 @@ public class SettingsManager : MonoBehaviour
     {
         return Mathf.Log10(Mathf.Clamp(volume01, 0.0001f, 1f)) * 20f;
     }
+
+    public void ResetHighscore()
+    {
+        LeaderboardManager.Instance.ResetHighscore();
+    }
 }
