@@ -48,7 +48,7 @@ public class ProjectileLauncher : MarKitBehavior
 
         for (int i = 0; i < numberOfBullets; i++)
         {
-            float t = (float)i / (numberOfBullets - 1); // Ensures full arc is covered
+            float t = (float)i / (numberOfBullets - (numberOfBullets > 1 ? 1 : 0)); // Ensures full arc is covered
             float arc = Mathf.Deg2Rad * (angle != 360 ? angle : angle - 360/numberOfBullets);
             float offset = arc * (t - 0.5f) + angleOffset * Mathf.Deg2Rad; // Spread evenly around center (0 = forward)
 
@@ -57,7 +57,6 @@ public class ProjectileLauncher : MarKitBehavior
             Vector2 direction = new Vector2(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle));
 
             var bullet = bulletPrefab.SpawnFromPrefab(transform.position, direction);
-            bullet.SetCollisionMask(Utilities.LayerMaskFromNames("Player"));
         }
 
         angleOffset += angleOffsetPerShot; // If you still need to keep this mechanic

@@ -7,6 +7,7 @@ TagManager:
   - KillZone
   - Collectable
   - Enemy
+  - Powerup
   layers:
   - Default
   - TransparentFX

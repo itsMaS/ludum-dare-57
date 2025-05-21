@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6190977311634743665}
   - component: {fileID: 6864681166794764489}
   m_Layer: 0
-  m_Name: FastBullet
+  m_Name: bullet_player_normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnDespawn:
+    m_PersistentCalls:
+      m_Calls: []
   baseSpeed: 100
+  lifetime: 5
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 129
 --- !u!96 &6864681166794764489
 TrailRenderer:
   serializedVersion: 3

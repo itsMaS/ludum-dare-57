@@ -7,12 +7,14 @@ using UnityEngine.SceneManagement;
 namespace MarKit
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class PlayerController : MarKitBehavior, IVisible2D, IBulletTarget
+    public class PlayerController : Singleton<PlayerController>, IVisible2D, IBulletTarget, IMarkitEventCaller
     {
         public MarKitEvent OnDash;
         public MarKitEvent OnShoot;
         public MarKitEvent OnDeath;
         public MarKitEvent OnTakeDamage;
+        public MarKitEvent OnPowerupCollected;
+        public MarKitEvent OnPowerupExpired;
 
         Rigidbody2D rb;
         Vector2 movementInputVector;
@@ -74,13 +76,18 @@ namespace MarKit
             {
                 Shoot();
             }
+
+            if(currentPowerup && currentPowerup.timeLeft <= 0)
+            {
+                currentPowerup.Expire();
+                currentPowerup = null;
+                OnPowerupExpired.Invoke(this);
+            }
         }
 
         private void Shoot()
         {
             var spawned = spawnedBullet.SpawnFromPrefab(bulletSpawnTransform.transform.position, bulletSpawnTransform.up);
-            spawned.SetCollisionMask(Utilities.LayerMaskFromNames("Player").Invert());
-
             OnShoot.Invoke(this);
         }
 
@@ -127,6 +134,30 @@ namespace MarKit
                     collision.transform.position = Vector3.Lerp(startPos, transform.position, t);
                 }, true, Utilities.Ease.OutQuad);
             }
+            else if(collision.transform.CompareTag("Powerup"))
+            {
+                if(collision.TryGetComponent<PowerupBehavior>(out var powerup))
+                {
+                    CollectPowerup(powerup);
+                }
+            }
+        }
+
+        public PowerupBehavior currentPowerup { get; private set; }
+
+        private void CollectPowerup(PowerupBehavior powerup)
+        {
+            if(currentPowerup && !currentPowerup.expired)
+            {
+                currentPowerup.Expire();
+                currentPowerup = null;
+                OnPowerupExpired.Invoke(this);
+            }
+
+            currentPowerup = powerup;
+            powerup.Collect(this);
+
+            OnPowerupCollected.Invoke(this);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

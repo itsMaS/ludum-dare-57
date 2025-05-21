@@ -728,24 +728,6 @@ namespace MarTools
             return texture;
         }
 
-        public static LayerMask LayerMaskFromNames(params string[] layerNames)
-        {
-            int mask = 0;
-            foreach (var name in layerNames)
-            {
-                int layer = LayerMask.NameToLayer(name);
-                if (layer != -1)
-                {
-                    mask |= 1 << layer;
-                }
-                else
-                {
-                    Debug.LogWarning($"Layer \"{name}\" not found.");
-                }
-            }
-            return mask;
-        }
-
         public static LayerMask Invert(this LayerMask mask)
         {
             return ~mask;

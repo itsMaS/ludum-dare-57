@@ -26,7 +26,7 @@ namespace MarKit
         Vector2 velocity;
 
         bool despawning = false;
-        private LayerMask collisionMask;
+        public LayerMask collisionMask;
 
         public BulletBehavior SpawnFromPrefab(Vector3 spawnPosition, Vector3 velocity)
         {
@@ -44,13 +44,6 @@ namespace MarKit
             });
 
             return instance;
-        }
-
-
-
-        public void SetCollisionMask(LayerMask mask)
-        {
-            this.collisionMask = mask;
         }
 
         private void Update()

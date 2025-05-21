@@ -106,7 +106,7 @@ namespace MarKit
                 if (field != null)
                 {
                     MarKitEvent evt = field.GetValue(target) as MarKitEvent;
-                    evt?.Invoke(property.objectReferenceValue as IMarkitEventCaller);
+                    evt?.Invoke(target as IMarkitEventCaller);
                 }
             }
 

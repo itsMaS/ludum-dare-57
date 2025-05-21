@@ -3,17 +3,25 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace MarKit
 {
     public class HUD : MonoBehaviour
     {
+        public UnityEvent OnPowerupCollected;
+        public UnityEvent OnPowerupExpired;
+
+
         [SerializeField] GameObject livesExample;
         [SerializeField] TextMeshProUGUI scoreText;
         [SerializeField] TextMeshProUGUI highscoreText;
         [SerializeField] Image comboFillImage;
         [SerializeField] TextMeshProUGUI comboAmountText;
+        [SerializeField] MultiTextMeshPro powerupText;
+        [SerializeField] Image powerupTimeLeft;
+        [SerializeField] GameObject powerupIndication;
 
         [SerializeField]
         GroupBehavior[] ComboEffects;
@@ -51,11 +59,25 @@ namespace MarKit
             GameManager.Instance.OnComboGained.AddListener(UpdateCombo);
             GameManager.Instance.OnComboLost.AddListener(UpdateCombo);
 
+            PlayerController.Instance.OnPowerupCollected.AddListener(PowerupCollected);
+            PlayerController.Instance.OnPowerupExpired.AddListener(PowerupExpired);
+
             UpdateHighscore();
             scoreText.SetText("0");
 
 
             UpdateCombo();
+        }
+
+        private void PowerupExpired()
+        {
+            OnPowerupExpired.Invoke();
+        }
+
+        private void PowerupCollected()
+        {
+            OnPowerupCollected.Invoke();
+            powerupText.SetText($"{PlayerController.Instance.currentPowerup.Title}");
         }
 
         private void Restart()
@@ -118,6 +140,11 @@ namespace MarKit
             comboFillImage.fillAmount = GameManager.Instance.comboProgress;
 
             comboAmountText.SetText($"x{GameManager.Instance.comboLevel}");
+
+            if(PlayerController.Instance.currentPowerup)
+            {
+                powerupTimeLeft.fillAmount = PlayerController.Instance.currentPowerup.timeLeftNormalized;
+            }
         }
     }
 }

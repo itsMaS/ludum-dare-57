@@ -81,6 +81,9 @@ MonoBehaviour:
         m_CallState: 2
   baseSpeed: 10
   lifetime: 3
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &4279996219032982242
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +218,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
+  resetOnEnable: 0
   startingPosition: 0
   ease: 0
   differentEaseBackwards: 0
@@ -292,6 +296,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
+  resetOnEnable: 0
   startingPosition: 0
   ease: 2
   differentEaseBackwards: 0
