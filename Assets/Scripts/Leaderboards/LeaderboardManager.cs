@@ -43,6 +43,7 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
     [System.Serializable]
     public class LeaderboardResult
     {
+        public Ranking playerRank => Rankings.Find(x => x.isYou);
         public List<Ranking> Rankings = new List<Ranking>();
     }
 
@@ -50,6 +51,10 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
 
     LeaderboardResult result = null;
     System.Action<LeaderboardResult> leaderboardAsk = null;
+
+    public UnityEvent<LeaderboardResult> OnFetched;
+    bool isLoading = false;
+
 
     private void Start()
     {
@@ -61,14 +66,29 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
     {
         if(globalLeaderboard.HasValue)
         {
+            result = null;
+            isLoading = true;
             await globalLeaderboard.Value.SubmitScoreAsync(GameManager.Instance.currentScore);
+            isLoading = false;
+            
             FetchLeaderboards();
         }
     }
 
     public async void FetchLeaderboards()
     {
-        Debug.Log("Leaderboard Manager loaded");
+        Debug.Log("Trying to fetch leaderboards");
+        if (isLoading) return;
+
+        if(!Steamworks.SteamClient.IsValid)
+        {
+            SendNegativeAnswer();
+            Debug.Log("Steam not initialized");
+            return;
+        }
+
+        Debug.Log("Fetching leaderboards");
+        isLoading = true;
 
         result = null;
         globalLeaderboard = await SteamUserStats.FindOrCreateLeaderboardAsync("global_leaderboard", LeaderboardSort.Descending, LeaderboardDisplay.Numeric);
@@ -82,26 +102,36 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
             {
                 foreach (var ranking in results)
                 {
-                    result.Rankings.Add(new Ranking(ranking));
+                    var r = new Ranking(ranking);
+                    result.Rankings.Add(r);
                 }
 
                 leaderboardAsk?.Invoke(result);
                 leaderboardAsk = null;
 
+                OnFetched.Invoke(result);
                 Debug.Log("Success");
             }
             else
             {
-                Debug.LogError("Failed to get rankings");
+                Debug.LogError($"Failed to get rankings");
+                SendNegativeAnswer();
                 return;
             }
         }
         else
         {
+            SendNegativeAnswer();
             Debug.LogError("Failed to get leaderboard");
             return;
         }
 
+        void SendNegativeAnswer()
+        {
+            leaderboardAsk?.Invoke(null);
+            leaderboardAsk = null;
+            isLoading = false;
+        }
     }
 
     internal void RequestLeaderboard(System.Action<LeaderboardResult> leaderboardsLoaded)
@@ -122,8 +152,8 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
         if(globalLeaderboard.HasValue)
         {
             globalLeaderboard.Value.ReplaceScore(0);
-            GameManager.highscore = 0;
             result = null;
         }
+        GameManager.highscore = 0;
     }
 }

@@ -43,6 +43,8 @@ namespace MarKit
 
         private void Update()
         {
+            if (GameManager.Instance.isPaused) return;
+
             if (currentLives <= 0) return;
 
             movementInputVector = Vector2.ClampMagnitude(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")), 1);

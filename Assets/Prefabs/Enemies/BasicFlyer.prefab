@@ -97,6 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementTarget: {fileID: 0}
   movementSpeed: 20
+  score: 10
 --- !u!114 &4776191703644729500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,10 +117,18 @@ MonoBehaviour:
     Actions:
     - rid: 4791926178863644756
     - rid: 4791926178863644757
+    - rid: 3229483845630558288
   maxHealth: 3
   references:
     version: 2
     RefIds:
+    - rid: 3229483845630558288
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: 3db932810cf24654683eb8ef1edd00cb, type: 3}
+        volume: 0.6
+        pitchDeviation: 0.2
     - rid: 4791926178863644755
       type: {class: MarkitInvokeUnityEvent, ns: MarKit, asm: Assembly-CSharp}
       data:
@@ -444,6 +453,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
+  resetOnEnable: 0
   startingPosition: 1
   ease: 6
   differentEaseBackwards: 0

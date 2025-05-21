@@ -2,6 +2,7 @@ using MarKit;
 using MarTools;
 using System;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class PauseMenu : Singleton<PauseMenu>
     [SerializeField] UnityEngine.UI.Button resumeButton;
 
     [SerializeField] GroupBehavior gameOverSection;
+    [SerializeField] GroupBehavior pauseMenu;
+    [SerializeField] AudioMixer audioMixer;
 
     CanvasGroup cg;
 
@@ -48,6 +51,7 @@ public class PauseMenu : Singleton<PauseMenu>
 
     internal static void Close()
     {
+        Instance.DelayedAction(0.5f, null, t => Instance.audioMixer.SetFloat("Low_Pass", t.Remap01(800, 22000)), false);
         Instance.OnClose.Invoke();
         Instance.ClickButton(() => Instance.gameObject.SetActive(false), 0.5f);
     }
@@ -55,6 +59,7 @@ public class PauseMenu : Singleton<PauseMenu>
     internal static void Open()
     {
         Instance.gameObject.SetActive(true);
+        Instance.DelayedAction(0.5f, null, t => Instance.audioMixer.SetFloat("Low_Pass", t.Remap01(22000, 800)), false);
 
         if(GameManager.Instance.gameStarted && !GameManager.Instance.gameOver)
         {
@@ -69,6 +74,7 @@ public class PauseMenu : Singleton<PauseMenu>
             Instance.playButton.gameObject.SetActive(true);
         }
 
+        Instance.pauseMenu.Activate();
         Instance.OnOpen.Invoke();
     }
 
@@ -79,7 +85,7 @@ public class PauseMenu : Singleton<PauseMenu>
         Instance.gameOverSection.Activate();
     }
 
-    public void ClickButton(UnityAction action, float duration = 0.2f)
+    public void ClickButton(UnityAction action, float duration = 0.1f)
     {
         cg.interactable = false;
         cg.blocksRaycasts = false;

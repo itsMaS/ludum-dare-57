@@ -41,6 +41,7 @@ namespace MarKit
                 PlayerPrefs.SetInt("highscore", value);
             }
         }
+        public int previousHighscore { get; private set; }
 
         [SerializeField] Transform killTrigger;
         [SerializeField] Transform recordMarker;
@@ -69,7 +70,7 @@ namespace MarKit
 
         public List<LevelTemplate> LoadedLevels = new List<LevelTemplate>();
 
-        private bool isPaused = false;
+        public bool isPaused { get; private set; } = false;
 
         protected override void Initialize()
         {
@@ -88,14 +89,19 @@ namespace MarKit
             comboLevel = 1;
             isPaused = true;
 
-            Application.targetFrameRate = 90;
+            LeaderboardManager.Instance.OnFetched.AddListener(LeaderboardUpdated);
+        }
+
+        private void LeaderboardUpdated(LeaderboardManager.LeaderboardResult arg0)
+        {
+            highscore = arg0.playerRank.Score;
         }
 
         public void StartGame()
         {
-            if (gameStarted) return;
+            if (gameStarted || gameOver || isPaused) return;
             gameStarted = true;
-
+            previousHighscore = highscore;
         }
 
         public void AddScore(int score, Vector3 position)
@@ -180,7 +186,10 @@ namespace MarKit
 
             if(gameStarted)
             {
-                killTrigger.transform.Translate(Vector2.down * Time.deltaTime * zoneMovementSpeed);
+                float distance = Mathf.Abs(killTrigger.transform.position.y  - playerDepth);
+                float zoneSpeed = distance.Remap(30, 0.5f, 20, 1.5f);
+
+                killTrigger.transform.Translate(Vector2.down * Time.deltaTime * zoneSpeed);
             }
 
             comboProgress -= Time.deltaTime * 0.025f * comboLevel;
