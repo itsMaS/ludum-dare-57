@@ -1,3 +1,4 @@
+using MarTools;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -5,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace MarKit
 {
-    public class GameEntityBehavior : MarKitBehavior, IBulletTarget
+    public class HealthBehavior : MarKitBehavior, IBulletTarget, IProgressProvider
     {
         public MarKitEvent OnReceivedDamage;
         public MarKitEvent OnDied;
@@ -17,6 +18,11 @@ namespace MarKit
         public int maxHealth = 10;
         public int currentHealth { get; private set; }
         public float normalizedHealth => (float)currentHealth / maxHealth;
+
+        public float Progress => normalizedHealth;
+        public float destroyDelay = 2;
+
+        public int scoreOnKill = 0;
 
         protected virtual void Start()
         {
@@ -46,7 +52,12 @@ namespace MarKit
                 item.enabled = false;
             }
 
-            Destroy(gameObject, 2);
+            Destroy(gameObject, destroyDelay);
+
+            if(scoreOnKill > 0)
+            {
+                GameManager.Instance.AddScore(scoreOnKill, transform.position);
+            }
 
             OnDied.Invoke(this);
         }

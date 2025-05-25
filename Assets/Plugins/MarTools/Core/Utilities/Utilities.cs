@@ -707,7 +707,6 @@ namespace MarTools
         {
             if (gradient == null)
             {
-                Debug.LogError("Gradient is null!");
                 return null;
             }
 

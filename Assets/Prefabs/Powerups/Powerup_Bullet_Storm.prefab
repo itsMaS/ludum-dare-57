@@ -10,11 +10,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1631952885023751764, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
       propertyPath: m_Name
-      value: Homing Bullets Variant
+      value: Powerup_Bullet_Storm
       objectReference: {fileID: 0}
     - target: {fileID: 3006283305695151818, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
       propertyPath: Title
       value: Bullet storm
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235193868985710214, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.00000058114523
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235193868985710214, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235193868985710214, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235193868985710214, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235193868985710214, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 4236545011107154707, guid: 4f862b2902ea01e4894d9ea4523d3cae, type: 3}
       propertyPath: m_LocalPosition.x
@@ -91,7 +111,7 @@ MonoBehaviour:
     timeScaled: 1
   numberOfBullets: 2
   angle: 30
-  angleOffset: -90
+  angleOffset: 0
   angleOffsetPerSecond: 0
   angleOffsetPerShot: 0
-  aimTowardsPlayer: 0
+  directionMode: 2

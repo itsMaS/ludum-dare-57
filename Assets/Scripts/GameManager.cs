@@ -23,6 +23,7 @@ namespace MarKit
         public MarKitEvent OnRecordBeaten;
         public MarKitEvent OnGameOver;
         public MarKitEvent OnRestart;
+        public MarKitEvent OnStartGame;
 
         public UnityEvent<int> OnScoreChanged;
         public UnityEvent OnComboGained;
@@ -67,6 +68,7 @@ namespace MarKit
 
         public int comboLevel = 1;
         public float comboProgress = 0;
+        public float gameStartDepth = 20;
 
         public List<LevelTemplate> LoadedLevels = new List<LevelTemplate>();
 
@@ -94,12 +96,14 @@ namespace MarKit
 
         private void LeaderboardUpdated(LeaderboardManager.LeaderboardResult arg0)
         {
-            highscore = arg0.playerRank.Score;
+            if(arg0.playerRank != null)
+                highscore = arg0.playerRank.Score;
         }
 
         public void StartGame()
         {
             if (gameStarted || gameOver || isPaused) return;
+            OnStartGame.Invoke(this);
             gameStarted = true;
             previousHighscore = highscore;
         }
@@ -178,7 +182,7 @@ namespace MarKit
         {
             Cursor.visible = false;
 
-            if(player.transform.position.y <= 20)
+            if(player.transform.position.y <= gameStartDepth)
             {
                 StartGame();
             }
@@ -320,6 +324,10 @@ namespace MarKit
         private void OnDrawGizmos()
         {
             Gizmos.DrawLine(Vector3.left*500 - Vector3.down * nextHeight, Vector3.right*500 - Vector3.down * nextHeight);
+
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(Vector2.down * gameStartDepth + Vector2.right * 100, Vector2.down * gameStartDepth - Vector2.right * 100);
         }
 
         internal void ResetCombo()

@@ -10,7 +10,8 @@ namespace MarKit
     public class PlayerController : Singleton<PlayerController>, IVisible2D, IBulletTarget, IMarkitEventCaller
     {
         public MarKitEvent OnDash;
-        public MarKitEvent OnShoot;
+        public MarKitEvent OnStartShooting;
+        public MarKitEvent OnEndShooting;
         public MarKitEvent OnDeath;
         public MarKitEvent OnTakeDamage;
         public MarKitEvent OnPowerupCollected;
@@ -23,12 +24,8 @@ namespace MarKit
         [SerializeField] Transform aimTransform;
         [SerializeField] Transform movementTransform;
         [SerializeField] Transform cameraTargetTransform;
-        [SerializeField] Transform bulletSpawnTransform;
 
         [SerializeField] Cooldown dashCooldown;
-        [SerializeField] Cooldown shootCooldown;
-        [SerializeField] BulletBehavior spawnedBullet;
-
         [SerializeField] Cooldown damageCooldown;
 
         Vector2 dashInertia;
@@ -71,24 +68,15 @@ namespace MarKit
 
             cameraTargetTransform.position = (Vector3)((Vector2)transform.position + aimInputVector);
 
-
-            if(Input.GetMouseButton(0) && shootCooldown.TryPerform())
-            {
-                Shoot();
-            }
-
             if(currentPowerup && currentPowerup.timeLeft <= 0)
             {
                 currentPowerup.Expire();
                 currentPowerup = null;
                 OnPowerupExpired.Invoke(this);
             }
-        }
 
-        private void Shoot()
-        {
-            var spawned = spawnedBullet.SpawnFromPrefab(bulletSpawnTransform.transform.position, bulletSpawnTransform.up);
-            OnShoot.Invoke(this);
+            if(Input.GetMouseButtonDown(0)) { OnStartShooting.Invoke(this); }
+            if(Input.GetMouseButtonUp(0)) { OnEndShooting.Invoke(this); }
         }
 
         private void Dash()
@@ -179,9 +167,9 @@ namespace MarKit
 
                 foreach (var item in Physics2D.OverlapCircleAll(transform.position, 5))
                 {
-                    if(item.gameObject.CompareTag("Enemy") && item.TryGetComponent<EnemyBehavior>(out var enemy))
+                    if(item.gameObject.CompareTag("Enemy") && item.TryGetComponent<NavigationBehavior>(out var enemy))
                     {
-                        enemy.inertia += (Vector2)(enemy.transform.position - transform.position).normalized * 20;
+                        //enemy.inertia += (Vector2)(enemy.transform.position - transform.position).normalized * 20;
                     }
                 }
 

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8941176429243025356}
   - component: {fileID: 21465790775058322}
   - component: {fileID: 3908591156495726046}
-  - component: {fileID: 3253888029865315703}
+  - component: {fileID: 5628331077531494777}
   m_Layer: 0
   m_Name: Rock
   m_TagString: Untagged
@@ -162,8 +162,8 @@ MonoBehaviour:
   m_ColliderSegment:
   - {x: 0.09999977, y: 0.021874998}
   - {x: -0.1, y: 0.021874998}
-  - {x: -0.021874998, y: 0}
-  - {x: 0.13493857, y: -0.030122876}
+  - {x: 0.1, y: -0.021874998}
+  - {x: 0.09999977, y: 0.021874998}
   m_ShadowSegment: []
 --- !u!68 &8941176429243025356
 EdgeCollider2D:
@@ -255,6 +255,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
+  resetOnEnable: 0
   startingPosition: 1
   ease: 6
   differentEaseBackwards: 0
@@ -331,7 +332,7 @@ MonoBehaviour:
   hpPerUnitOfArea: 0.2
   sizeBounds: {x: 4, y: 4}
   areaSize: 0
---- !u!114 &3253888029865315703
+--- !u!114 &5628331077531494777
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -340,61 +341,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 5867446351757639693}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cce822710fceb804e9347cab971418b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ac3b74161096f9448ab855d706a230d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnReceivedDamage:
     Actions:
-    - rid: 4791926178863644758
+    - rid: 3229483931696103513
+    - rid: 3229483934288707677
+    debug: 0
+    name: OnReceivedDamage
   OnDied:
     Actions:
-    - rid: 4791926178863644759
-    - rid: 4791926179696476242
+    - rid: 3229483931696103514
+    - rid: 3229483931696103516
+    debug: 0
+    name: OnDied
   maxHealth: 10
+  destroyDelay: 0
   references:
     version: 2
     RefIds:
-    - rid: 4791926178863644758
-      type: {class: MarkitInvokeUnityEvent, ns: MarKit, asm: Assembly-CSharp}
+    - rid: 3229483931696103513
+      type: {class: TweenFlashParameters, ns: MarKit, asm: Assembly-CSharp}
       data:
-        Event:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 21465790775058322}
-              m_TargetAssemblyTypeName: MarTools.TweenCore, MarTools
-              m_MethodName: PlayForwards
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 4791926178863644759
-      type: {class: MarkitInvokeUnityEvent, ns: MarKit, asm: Assembly-CSharp}
+        flashParameter: _OverlayProgress
+    - rid: 3229483931696103514
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
       data:
-        Event:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 3150586941269045811}
-              m_TargetAssemblyTypeName: UnityEngine.Renderer, UnityEngine
-              m_MethodName: set_enabled
-              m_Mode: 6
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-    - rid: 4791926179696476242
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: d0ddc0055f7fed0408af48d5c49264d5, type: 3}
+        volume: 1
+        pitchDeviation: 0.5
+    - rid: 3229483931696103516
       type: {class: SpawnGameObject, ns: MarKit, asm: Assembly-CSharp}
       data:
         obj: {fileID: 5761190533866807131, guid: f617aae00e19a1c409630ec41d18311f, type: 3}
         destroyAfter: -1
+    - rid: 3229483934288707677
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: d0ddc0055f7fed0408af48d5c49264d5, type: 3}
+        volume: 0.2
+        pitchDeviation: 0.5
 --- !u!1001 &6440717805908232897
 PrefabInstance:
   m_ObjectHideFlags: 0

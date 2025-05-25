@@ -95,7 +95,7 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
 
         if (globalLeaderboard.HasValue)
         {
-            var results = await globalLeaderboard.Value.GetScoresAroundUserAsync(2, 2);
+            var results = await globalLeaderboard.Value.GetScoresAroundUserAsync(-2, 2);
 
             result = new LeaderboardResult();
             if (results != null)

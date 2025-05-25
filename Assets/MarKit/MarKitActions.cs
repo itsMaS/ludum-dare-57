@@ -1,4 +1,5 @@
 using MarTools;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -47,6 +48,7 @@ namespace MarKit
 
             source.pitch = 1 + Random.value.Remap01(-pitchDeviation, pitchDeviation);
             source.clip = clip;
+            source.volume = volume;
 
             source.outputAudioMixerGroup = group;
             source.Play();
@@ -98,6 +100,40 @@ namespace MarKit
             };
 
             impulseSource.GenerateImpulseWithForce(amplitude);
+        }
+    }
+
+    [Name("Juice/Flash enemies")]
+    [System.Serializable]
+    public class TweenFlashParameters : IMarKitAction
+    {
+        public string flashParameter = "_OverlayProgress";
+
+        private Renderer[] renderers = null;
+        private MaterialPropertyBlock[] propertyBlocks = null;
+        private Coroutine cor = null;
+
+        public void Invoke(IMarkitEventCaller behavior, MarKitEvent ev)
+        {
+            if (renderers == null)
+            {
+                renderers = behavior.gameObject.GetComponentsInChildren<Renderer>();
+                propertyBlocks = new MaterialPropertyBlock[renderers.Length];
+            }
+
+            if (cor != null)
+            {
+                behavior.behavior.StopCoroutine(cor);
+                cor = null;
+            }
+
+            cor = behavior.behavior.DelayedAction(0.25f, null, t =>
+            {
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    renderers[i].material.SetFloat(flashParameter, 1-t);
+                }
+            });
         }
     }
 }

@@ -86,6 +86,8 @@ namespace MarKit
             scoreTarget = 0;
             scoreText.SetText("0");
 
+            OnPowerupExpired.Invoke();
+
             UpdateLives();
             UpdateCombo();
         }

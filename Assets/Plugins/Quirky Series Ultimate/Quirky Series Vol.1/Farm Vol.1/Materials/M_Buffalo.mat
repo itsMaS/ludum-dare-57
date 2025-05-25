@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Buffalo
-  m_Shader: {fileID: -6465566751694194690, guid: a44401f8b3d263c4e9c2ed62b3f5adff, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 8123304f4e3c13f4dad07626d8f0c133, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -29,7 +29,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3001
   stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
@@ -37,6 +37,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Gradient:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: aa2d6a2f5cc580e4cb1fc39de514ca9a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -56,9 +60,11 @@ Material:
     m_Ints: []
     m_Floats:
     - _Emission: 0.5
-    - _QueueControl: 0
+    - _OverlayProgress: 0
+    - _QueueControl: 1
     - _QueueOffset: 0
     m_Colors:
     - _Color: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

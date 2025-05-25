@@ -46,32 +46,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4560dc0c9309ace42becb6c00a6041fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnLaunched:
-    m_PersistentCalls:
-      m_Calls: []
+  OnSpawned:
+    Actions:
+    - rid: 3229483931696103511
+    debug: 0
+    name: OnSpawned
   OnCollided:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7977577040933184473}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  OnDespawn:
-    m_PersistentCalls:
-      m_Calls: []
+    Actions:
+    - rid: 3229483929799229526
+    - rid: 3229483931696103512
+    debug: 0
+    name: OnCollided
+  OnDespawned:
+    Actions: []
+    debug: 0
+    name: OnDespawned
   baseSpeed: 100
   lifetime: 5
+  radius: 0.5
   collisionMask:
     serializedVersion: 2
     m_Bits: 129
+  references:
+    version: 2
+    RefIds:
+    - rid: 3229483929799229526
+      type: {class: MarkitInvokeUnityEvent, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        Event:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 7977577040933184473}
+              m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 3229483931696103511
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: 2ff47352bed9d7546a5d2b4e4af2c8bf, type: 3}
+        volume: 1
+        pitchDeviation: 0.5
+    - rid: 3229483931696103512
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: 483e992e01cbf54498d51ba33db2bc3d, type: 3}
+        volume: 0.2
+        pitchDeviation: 0.3
 --- !u!96 &6864681166794764489
 TrailRenderer:
   serializedVersion: 3

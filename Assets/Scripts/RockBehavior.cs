@@ -11,20 +11,20 @@ using UnityEditor;
 
 namespace MarKit
 {
-    [RequireComponent(typeof(GameEntityBehavior))]
+    [RequireComponent(typeof(HealthBehavior))]
     public class RockBehavior : MarKitBehavior, IGeneratable
     {
         public float hpPerUnitOfArea = 2;
         public Vector2 sizeBounds = new Vector2(3, 3);
 
         SpriteShapeController controller;
-        GameEntityBehavior entity;
+        HealthBehavior entity;
 
         [SerializeField] float areaSize = 0;
 
         private void Awake()
         {
-            entity = GetComponent<GameEntityBehavior>();
+            entity = GetComponent<HealthBehavior>();
 
             entity.OnReceivedDamage.AddListener(Hit);
         }
@@ -139,18 +139,6 @@ namespace MarKit
         public void Hit()
         {
             controller.spriteShapeRenderer.material.SetFloat("_CrackProgress", 1-entity.normalizedHealth);
-        }
-
-        protected void Die()
-        {
-            this.DelayedAction(0.25f, () =>
-            {
-
-            }, t =>
-            {
-                controller.spriteShapeRenderer.materials[0].SetFloat("_DissolveProgress", t);
-                controller.spriteShapeRenderer.materials[1].SetFloat("_DissolveProgress", t);
-            }, true, Utilities.Ease.Linear);
         }
 
         public static float CalculatePolygonArea(List<Vector2> points)

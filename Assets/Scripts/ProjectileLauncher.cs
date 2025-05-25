@@ -5,26 +5,24 @@ using UnityEngine;
 
 public class ProjectileLauncher : MarKitBehavior
 {
+    public enum InitialDirection
+    {
+        None,
+        Player,
+        Transform,
+    }
+
+
     public BulletBehavior bulletPrefab;
 
     public Cooldown shootCooldown;
-    public Vector2 direction { get; set; }
     public int numberOfBullets = 4;
     [Range(0,360)] public float angle = 90;
     public float angleOffset = 0;
     public float angleOffsetPerSecond = 0;
     public float angleOffsetPerShot = 0;
-    public bool aimTowardsPlayer = true;
 
-    Vector2 deltaPosition;
-    Vector2 previousPosition;
-
-
-
-    private void Start()
-    {
-        direction = transform.up;
-    }
+    public InitialDirection directionMode = InitialDirection.Transform;
 
     private void Update()
     {
@@ -41,10 +39,17 @@ public class ProjectileLauncher : MarKitBehavior
 
     public void Shoot()
     {
-        Vector2 toPlayer = GameManager.Instance.player.transform.position - transform.position;
-        toPlayer.Normalize(); // Normalize to get a unit vector for consistent direction
+        Vector3 startDirection = Vector3.up;
+        if(directionMode == InitialDirection.Player)
+        {
+            startDirection = (GameManager.Instance.player.transform.position - transform.position).normalized;
+        }
+        else if(directionMode == InitialDirection.Transform)
+        {
+            startDirection = transform.up;
+        }
 
-        float baseAngle = aimTowardsPlayer ? Mathf.Atan2(toPlayer.y, toPlayer.x) : 0;// + Mathf.PI; // Convert to angle in radians
+        float baseAngle = Mathf.Atan2(startDirection.y, startDirection.x);
 
         for (int i = 0; i < numberOfBullets; i++)
         {
@@ -65,5 +70,13 @@ public class ProjectileLauncher : MarKitBehavior
 
     private void OnDrawGizmos()
     {
+    }
+
+    private void OnEnable()
+    {
+        if (shootCooldown.TryPerform())
+        {
+            Shoot();
+        }
     }
 }

@@ -30,12 +30,18 @@ namespace MarKit
     [System.Serializable]
     public class MarKitEvent : MarKitEventBase
     {
-
         [SerializeReference] public List<IMarKitAction> Actions = new List<IMarKitAction>();
+        [HideInInspector] public bool debug;
+        [HideInInspector] public string name;
         
         private UnityAction action;
+
         public void Invoke(IMarkitEventCaller parent)
         {
+            if(debug)
+            {
+                Debug.Log($"{parent.gameObject.name} -> {name}");
+            }
             foreach (var action in Actions)
             {
                 action.Invoke(parent, this);
@@ -99,15 +105,26 @@ namespace MarKit
 
             EditorGUI.LabelField(labelRect, label);
 
+            MarKitEvent ev = null;
+            object target = property.serializedObject.targetObject;
+            var field = target.GetType().GetField(property.name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            if (field != null)
+            {
+                ev = field.GetValue(target) as MarKitEvent;
+            }
+
             if (GUI.Button(buttonRect, "Invoke"))
             {
-                object target = property.serializedObject.targetObject;
-                var field = target.GetType().GetField(property.name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (field != null)
-                {
-                    MarKitEvent evt = field.GetValue(target) as MarKitEvent;
-                    evt?.Invoke(target as IMarkitEventCaller);
-                }
+                ev?.Invoke(target as IMarkitEventCaller);
+            }
+
+            Rect toggleRect = new Rect(buttonRect);
+            toggleRect.x -= 90;
+
+            if(ev != null)
+            {
+                ev.name = field.Name;
+                ev.debug = GUI.Toggle(toggleRect, ev.debug, "Debug");
             }
 
             // Draw property field inside box, below header

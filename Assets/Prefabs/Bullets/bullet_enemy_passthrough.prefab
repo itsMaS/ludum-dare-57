@@ -46,44 +46,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4560dc0c9309ace42becb6c00a6041fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnLaunched:
-    m_PersistentCalls:
-      m_Calls: []
+  OnSpawned:
+    Actions:
+    - rid: 3229483934288707684
+    debug: 0
+    name: OnSpawned
   OnCollided:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDespawn:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4401845720497218292}
-        m_TargetAssemblyTypeName: MarTools.TweenCore, MarTools
-        m_MethodName: PlayForwards
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2694442534698346311}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Stop
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  baseSpeed: 10
-  lifetime: 3
+    Actions: []
+    debug: 0
+    name: OnCollided
+  OnDespawned:
+    Actions:
+    - rid: 3229483934288707679
+    debug: 0
+    name: OnDespawned
+  baseSpeed: 15
+  lifetime: 10
+  radius: 0.75
   collisionMask:
     serializedVersion: 2
     m_Bits: 64
+  references:
+    version: 2
+    RefIds:
+    - rid: 3229483934288707679
+      type: {class: MarkitInvokeUnityEvent, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        Event:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4401845720497218292}
+              m_TargetAssemblyTypeName: MarTools.TweenCore, MarTools
+              m_MethodName: PlayForwards
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 2694442534698346311}
+              m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+              m_MethodName: Stop
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 3229483934288707684
+      type: {class: MarkitPlaySound, ns: MarKit, asm: Assembly-CSharp}
+      data:
+        group: {fileID: 4379455912082873938, guid: 4edac018991ab8a44be3f47943af3fc7, type: 2}
+        clip: {fileID: 8300000, guid: 483e992e01cbf54498d51ba33db2bc3d, type: 3}
+        volume: 0.2
+        pitchDeviation: 0.5
 --- !u!1 &4279996219032982242
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +240,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
-  resetOnEnable: 0
+  resetOnEnable: 1
   startingPosition: 0
   ease: 0
   differentEaseBackwards: 0
@@ -296,7 +318,7 @@ MonoBehaviour:
   relative: 0
   timeScaled: 1
   delayRange: {x: 0, y: 0}
-  resetOnEnable: 0
+  resetOnEnable: 1
   startingPosition: 0
   ease: 2
   differentEaseBackwards: 0
